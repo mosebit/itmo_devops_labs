@@ -18,4 +18,4 @@ sudo docker compose up -d
 
 Пример отработанного дага:
 
-[aiflow_web_screenshot](https://github.com/mosebit/itmo_devops_labs/blob/main/aiflow_web_screenshot.png)
+![aiflow_web_screenshot](https://github.com/mosebit/itmo_devops_labs/blob/main/aiflow_web_screenshot.png)
