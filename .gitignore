@@ -1,0 +1,6 @@
+venv/
+wsl_venv/
+wsl2_venv/
+__pycache__/
+logs/
+.vscode/
