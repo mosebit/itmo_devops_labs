@@ -5,4 +5,4 @@
 ![alt text](<dag_new.png>)
 
 Задача в веб-интерфейсе Spark:
-![alt text](<Pasted image 20260511124929.png>)
+![alt text](<spark_web.png>)
