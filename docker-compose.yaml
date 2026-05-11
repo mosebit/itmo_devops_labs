@@ -87,6 +87,7 @@ x-airflow-common:
     AIRFLOW_CONFIG: '/opt/airflow/config/airflow.cfg'
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR:-.}/spark:/opt/airflow/spark
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
@@ -114,6 +115,26 @@ services:
       retries: 5
       start_period: 5s
     restart: always
+
+  spark-master: # мастер нода в кластере Spark
+    container_name: spark-master # ОБЯЗАТЕЛЬНО, т.к. на этот параметр многое завязано. В докере container_name = hostname внутри контейнера, т.е. это доменное имя виртуального хоста
+    image: apache/spark:3.5.0
+    ports:
+    - '4040:8080' # Spark WebUI port
+    - '7077:7077' # Spark connection port
+    command: '/opt/spark/bin/spark-class org.apache.spark.deploy.master.Master' # команда для запуска сервиса в режиме мастер
+    depends_on:
+      - postgres
+
+  spark-worker: # воркер в кластере Spark
+    container_name: spark-worker
+    image: apache/spark:3.5.0
+    depends_on:
+      - spark-master
+    ports:
+      - "7000:7000"
+    command: '/opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077' # команда для запуска сервиса в режиме воркер и подключения к мастеру
+
 
   # ITMO_TASK_FILTERING
   # redis:
@@ -308,6 +329,13 @@ services:
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
       _PIP_ADDITIONAL_REQUIREMENTS: ''
     user: "0:0"
+    
+    depends_on:
+      postgres:
+        condition: service_healthy
+      spark-worker:
+        condition: service_started
+
 
   # ITMO_TASK_FILTERING
   # airflow-cli:
