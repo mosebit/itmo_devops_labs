@@ -1,0 +1,6 @@
+logs/
+spark-logs/
+plugins/
+__pycache__/
+*.pyc
+.env
